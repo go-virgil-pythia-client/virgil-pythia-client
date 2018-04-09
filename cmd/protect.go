@@ -2,7 +2,6 @@ package cmd
 
 import (
 	"gopkg.in/urfave/cli.v2"
-	"github.com/pkg/errors"
 	"gopkg.in/virgil-pythia-client.v0/client"
 	"github.com/VirgilSecurity/pythia-lib-go"
 	"fmt"
@@ -42,7 +41,7 @@ func Protect(client *common.VirgilHttpClient, pythia *pythia.Pythia) *cli.Comman
 
 func protectFunc (c *cli.Context, client *common.VirgilHttpClient, pythia *pythia.Pythia) error {
 	if c.Args().Len() != 2 {
-		return errors.New("invalid number of arguments")
+		return cli.Exit("invalid number of arguments", 1)
 	}
 
 	pass := []byte(c.Args().Get(1))
@@ -50,7 +49,7 @@ func protectFunc (c *cli.Context, client *common.VirgilHttpClient, pythia *pythi
 	blinded, secret, err := pythia.Blind(pass)
 
 	if err != nil{
-		return err
+		return cli.Exit(err, 1)
 	}
 
 	req := &EvalRequest{
@@ -64,7 +63,7 @@ func protectFunc (c *cli.Context, client *common.VirgilHttpClient, pythia *pythi
 	_, err = client.Send("POST","/api/v1/eval", req, &resp)
 
 	if err != nil{
-		return err
+		return cli.Exit(err, 1)
 	}
 
 	deblinded, err := pythia.Deblind(resp.Y, secret)

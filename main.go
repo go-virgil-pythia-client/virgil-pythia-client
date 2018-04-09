@@ -51,7 +51,8 @@ func main() {
 		Address:"https://pythia.virgilsecurity.com",
 	}
 
-	protectCmd := cmd.Protect(client, p, )
+	protectCmd := cmd.Protect(client, p)
+	checkCmd := cmd.Check(client, p)
 	app := &cli.App{
 		Flags: []cli.Flag{
 			&cli.StringFlag{
@@ -64,6 +65,7 @@ func main() {
 		},
 		Commands: []*cli.Command{
 			protectCmd,
+			checkCmd,
 		},
 	}
 	app.Run(os.Args)
