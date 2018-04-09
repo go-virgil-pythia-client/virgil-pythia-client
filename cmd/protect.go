@@ -30,8 +30,7 @@ func Protect(client *common.VirgilHttpClient, pythia *pythia.Pythia) *cli.Comman
 	return &cli.Command{
 		Name:      "protect",
 		Aliases:   []string{"p"},
-		Usage:     "protect a password",
-		ArgsUsage: "username password > protected-password",
+		Usage:     "protect username password > protected-password",
 		Action: func(context *cli.Context) error {
 			return protectFunc(context, client, pythia)
 		},
