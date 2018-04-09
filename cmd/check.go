@@ -23,34 +23,10 @@ func Check(client *common.VirgilHttpClient, pythia *pythia.Pythia) *cli.Command 
 
 
 func checkFunc (c *cli.Context, client *common.VirgilHttpClient, pythia *pythia.Pythia) error {
-	if c.Args().Len() != 2 {
-		return cli.Exit("invalid number of arguments", 1)
-	}
-
-	pass := []byte(c.Args().Get(1))
-
-	blinded, secret, err := pythia.Blind(pass)
-
+	deblinded, err := RequestEval(c, client, pythia)
 	if err != nil{
 		return cli.Exit(err, 1)
 	}
-
-	req := &EvalRequest{
-		T: []byte(c.Args().First()),
-		X: blinded,
-		W: []byte(c.String("clientId")),
-	}
-
-	var resp *EvalResponse
-
-	_, err = client.Send("POST","/api/v1/eval", req, &resp)
-
-	if err != nil{
-		return cli.Exit(err, 1)
-	}
-
-	deblinded, err := pythia.Deblind(resp.Y, secret)
-
 	read, err := ioutil.ReadAll(os.Stdin)
 	if err != nil{
 		return cli.Exit(err, 1)
