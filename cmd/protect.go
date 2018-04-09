@@ -27,7 +27,7 @@ type EvalResponse struct {
 }
 
 
-func Protect(client *common.VirgilHttpClient, pythia *pythia.Pythia, ) *cli.Command {
+func Protect(client *common.VirgilHttpClient, pythia *pythia.Pythia) *cli.Command {
 	return &cli.Command{
 		Name:      "protect",
 		Aliases:   []string{"p"},
@@ -56,7 +56,7 @@ func protectFunc (c *cli.Context, client *common.VirgilHttpClient, pythia *pythi
 	req := &EvalRequest{
 		T: []byte(c.Args().First()),
 		X: blinded,
-		W: []byte("DemoApp"),
+		W: []byte(c.String("clientId")),
 	}
 
 	var resp *EvalResponse

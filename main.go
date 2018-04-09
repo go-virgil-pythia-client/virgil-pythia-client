@@ -51,8 +51,17 @@ func main() {
 		Address:"https://pythia.virgilsecurity.com",
 	}
 
-	protectCmd := cmd.Protect(client, p)
+	protectCmd := cmd.Protect(client, p, )
 	app := &cli.App{
+		Flags: []cli.Flag{
+			&cli.StringFlag{
+				Name:    "clientId",
+				Aliases: []string{"cli"},
+				Value:   "DemoApp",
+				Usage:   "Pythia client (app) Id",
+				EnvVars: []string{"CLIENT_ID"},
+			},
+		},
 		Commands: []*cli.Command{
 			protectCmd,
 		},
