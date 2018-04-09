@@ -83,7 +83,6 @@ func (vc *VirgilHttpClient) Send(method string, url string, payload interface{},
 		if respObj != nil {
 
 			decoder := json.NewDecoder(resp.Body)
-			decoder.DisallowUnknownFields()
 			err = decoder.Decode(respObj)
 			if err != nil {
 				return nil, errors.Wrap(err, "VirgilHttpClient.Send: unmarshal response object")
