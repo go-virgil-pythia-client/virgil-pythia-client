@@ -1,4 +1,3 @@
-package main
 /*
  * Copyright (C) 2015-2018 Virgil Security Inc.
  *
@@ -35,27 +34,75 @@ package main
  * POSSIBILITY OF SUCH DAMAGE.
  *
  */
+
+package common
+
 import (
-	"github.com/VirgilSecurity/pythia-lib-go"
-	"gopkg.in/virgil-pythia-client.v0/client"
-	"gopkg.in/virgil-pythia-client.v0/cmd"
-	"gopkg.in/urfave/cli.v2"
-	"os"
+	"bytes"
+	"encoding/json"
+	"io/ioutil"
+	"net/http"
+
+	"github.com/pkg/errors"
+	"encoding/hex"
 )
 
-func main() {
+type HttpClient interface {
+	Do(*http.Request) (*http.Response, error)
+}
 
-	p := pythia.New()
+type VirgilHttpClient struct {
+	Client  HttpClient
+	Address string
+}
 
-	client := &common.VirgilHttpClient{
-		Address:"https://pythia.virgilsecurity.com",
+func (vc *VirgilHttpClient) Send(method string, url string, payload interface{}, respObj interface{}) (headers http.Header, err error) {
+	var body []byte
+	if payload != nil {
+		body, err = json.Marshal(payload)
+		if err != nil {
+			return nil, errors.Wrap(err, "VirgilHttpClient.Send: marshal payload")
+		}
+	}
+	req, err := http.NewRequest(method, vc.Address+url, bytes.NewReader(body))
+	if err != nil {
+		return nil, errors.Wrap(err, "VirgilHttpClient.Send: new request")
 	}
 
-	protectCmd := cmd.Protect(client, p)
-	app := &cli.App{
-		Commands: []*cli.Command{
-			protectCmd,
-		},
+	client := vc.getHttpClient()
+	resp, err := client.Do(req)
+	if err != nil {
+		return nil, errors.Wrap(err, "VirgilHttpClient.Send: send request")
 	}
-	app.Run(os.Args)
+	defer resp.Body.Close()
+	if resp.StatusCode == http.StatusNotFound {
+		return nil, errors.New("not found")
+	}
+
+	if resp.StatusCode == http.StatusOK  {
+		if respObj != nil {
+
+			decoder := json.NewDecoder(resp.Body)
+			decoder.DisallowUnknownFields()
+			err = decoder.Decode(respObj)
+			if err != nil {
+				return nil, errors.Wrap(err, "VirgilHttpClient.Send: unmarshal response object")
+			}
+		}
+		return resp.Header, nil
+	}
+
+	respBody, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		return nil, errors.Wrap(err, "VirgilHttpClient.Send: read response body")
+	}
+
+	return nil, errors.New(hex.EncodeToString(respBody))
+}
+
+func (vc *VirgilHttpClient) getHttpClient() HttpClient {
+	if vc.Client != nil {
+		return vc.Client
+	}
+	return http.DefaultClient
 }
