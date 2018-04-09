@@ -14,7 +14,7 @@ func Check(client *common.VirgilHttpClient, pythia *pythia.Pythia) *cli.Command 
 	return &cli.Command{
 		Name:      "check",
 		Aliases:   []string{"c"},
-		Usage:     "check username password < protected-password",
+		ArgsUsage:     "username password < protected-password",
 		Action: func(context *cli.Context) error {
 			return checkFunc(context, client, pythia)
 		},
