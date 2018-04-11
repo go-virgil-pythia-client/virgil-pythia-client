@@ -42,5 +42,7 @@ func RequestEval (c *cli.Context, client *common.VirgilHttpClient, pythia *pythi
 
 	deblinded, err := pythia.Deblind(resp.Y, secret)
 
+	fmt.Fprintf(os.Stderr, "protected password:   %s...\n", hex.EncodeToString(deblinded)[:32])
+
 	return deblinded, err
 }
