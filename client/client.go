@@ -44,6 +44,7 @@ import (
 	"net/http"
 
 	"github.com/pkg/errors"
+	"fmt"
 )
 
 type HttpClient interface {
@@ -95,7 +96,7 @@ func (vc *VirgilHttpClient) Send(method string, url string, payload interface{},
 		return nil, errors.Wrap(err, "VirgilHttpClient.Send: read response body")
 	}
 
-	return nil, errors.New(string(respBody))
+	return nil, errors.New(fmt.Sprintf("%s\n",string(respBody)))
 }
 
 func (vc *VirgilHttpClient) getHttpClient() HttpClient {

@@ -18,7 +18,7 @@ func RequestEval (c *cli.Context, client *common.VirgilHttpClient, pythia *pythi
 	pass := []byte(c.Args().Get(1))
 
 	blinded, secret, err := pythia.Blind(pass)
-	fmt.Fprintf(os.Stderr, "blinded password: %s\n", hex.EncodeToString(blinded))
+	fmt.Fprintf(os.Stderr, "blinded password:     %s...\n", hex.EncodeToString(blinded)[:32])
 
 	if err != nil{
 		return nil, err
@@ -37,6 +37,8 @@ func RequestEval (c *cli.Context, client *common.VirgilHttpClient, pythia *pythi
 	if err != nil{
 		return nil, err
 	}
+
+	fmt.Fprintf(os.Stderr, "response from server: %s...\n", hex.EncodeToString(resp.Y)[:32])
 
 	deblinded, err := pythia.Deblind(resp.Y, secret)
 
