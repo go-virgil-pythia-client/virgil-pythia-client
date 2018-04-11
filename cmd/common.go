@@ -40,5 +40,5 @@ func RequestEval (c *cli.Context, client *common.VirgilHttpClient, pythia *pythi
 
 	deblinded, err := pythia.Deblind(resp.Y, secret)
 
-	return deblinded, nil
+	return deblinded, err
 }

@@ -44,7 +44,6 @@ import (
 	"net/http"
 
 	"github.com/pkg/errors"
-	"encoding/hex"
 )
 
 type HttpClient interface {
@@ -96,7 +95,7 @@ func (vc *VirgilHttpClient) Send(method string, url string, payload interface{},
 		return nil, errors.Wrap(err, "VirgilHttpClient.Send: read response body")
 	}
 
-	return nil, errors.New(hex.EncodeToString(respBody))
+	return nil, errors.New(string(respBody))
 }
 
 func (vc *VirgilHttpClient) getHttpClient() HttpClient {
