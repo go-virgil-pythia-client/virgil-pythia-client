@@ -1,6 +1,8 @@
 # virgil-pythia-client
 A demo client for VirgilSecurity Pythia Service
 
+### Works only on OsX and Linux, x64
+
 # Usage example:
 
 ```bash
